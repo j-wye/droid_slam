@@ -1,0 +1,9 @@
+# ninja log v5
+0	9219	1710740831800438559	/home/research/research/src/DROID-SLAM/build/temp.linux-x86_64-cpython-311/src/droid.o	995c9eb708cecba5
+0	90792	1710740913362049491	/home/research/research/src/DROID-SLAM/build/temp.linux-x86_64-cpython-311/src/correlation_kernels.o	828ce4a1ee916fc3
+0	92980	1710740915546091363	/home/research/research/src/DROID-SLAM/build/temp.linux-x86_64-cpython-311/src/altcorr_kernel.o	39700b8c8145b245
+0	101020	1710740923586245064	/home/research/research/src/DROID-SLAM/build/temp.linux-x86_64-cpython-311/src/droid_kernels.o	57540cc19a4a528e
+0	8779	1710740932746419373	/home/research/research/src/DROID-SLAM/build/temp.linux-x86_64-cpython-311/thirdparty/lietorch/lietorch/src/lietorch.o	4c16fcf07c78906f
+0	20218	1710740944186635949	/home/research/research/src/DROID-SLAM/build/temp.linux-x86_64-cpython-311/thirdparty/lietorch/lietorch/src/lietorch_cpu.o	6ac70c0651c9f0ea
+0	251897	1710741175823333262	/home/research/research/src/DROID-SLAM/build/temp.linux-x86_64-cpython-311/thirdparty/lietorch/lietorch/src/lietorch_gpu.o	c0e0582336d68160
+0	9145	1711094239570784852	/home/research/DROID-SLAM/build/temp.linux-x86_64-cpython-311/src/droid.o	13258cf24e280e6c
