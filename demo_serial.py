@@ -14,8 +14,6 @@ from torch.multiprocessing import Process
 from droid import Droid
 import torch.nn.functional as F
 
-
-
 from rclpy.node import Node
 from sensor_msgs.msg import Image, LaserScan
 from cv_bridge import CvBridge, CvBridgeError
