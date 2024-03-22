@@ -25,6 +25,7 @@ pip install opencv-python torch-scatter open3d tqdm scipy tensorboard matplotlib
 
 3. Compile the extensions (takes about 10 minutes)
 ```Bash
+cd DROID-SLAM
 python setup.py install
 ```
 
@@ -112,7 +113,6 @@ You can then run the training script. We use 4x3090 RTX GPUs for training which 
 ```
 python train.py --datapath=<path to tartanair> --gpus=4 --lr=0.00025
 ```
-
 
 ## Acknowledgements
 Data from [TartanAir](https://theairlab.org/tartanair-dataset/) was used to train our model. We additionally use evaluation tools from [evo](https://github.com/MichaelGrupp/evo) and [tartanair_tools](https://github.com/castacks/tartanair_tools).
