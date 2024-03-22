@@ -11,8 +11,8 @@ To run the code you will need ...
 git clone --recursive https://github.com/princeton-vl/DROID-SLAM.git
 ```
 
-2. Creating a new anaconda environment using the provided .yaml file. Use `environment_novis.yaml` to if you do not want to use the visualization
-```Bash
+2. Creating a new anaconda environment using the provided .yaml file.
+```bash
 conda create -n droid python=3.10
 echo 'alias cad="conda activate droid"' >> ~/.bashrc
 sb && cad
@@ -24,7 +24,7 @@ pip install opencv-python torch-scatter open3d tqdm scipy tensorboard matplotlib
 ```
 
 3. Compile the extensions (takes about 10 minutes)
-```Bash
+```bash
 cd DROID-SLAM
 python setup.py install
 ```
@@ -34,7 +34,7 @@ python setup.py install
 1. Download the model from google drive: [droid.pth](https://drive.usercontent.google.com/u/0/uc?id=1PpqVt1H4maBa_GbPJp4NwxRsd9jk-elh&export=download)
 
 2. Download some sample videos using the provided script.
-```Bash
+```bash
 ./tools/download_sample_data.sh
 ```
 
