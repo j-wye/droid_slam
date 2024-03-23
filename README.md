@@ -19,7 +19,7 @@ sb && cad
 pip install --upgrade pip setuptools
 pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 pip install evo --upgrade --no-binary evo
-pip install gdow
+pip install gdown
 pip install opencv-python torch-scatter open3d tqdm scipy tensorboard matplotlib pyyaml
 ```
 
