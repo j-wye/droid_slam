@@ -1,6 +1,7 @@
 import rclpy
 import sys
 sys.path.append('droid_slam')
+sys.path.append('/opt/ros/humble/lib/python3.10/site-packages')
 from tqdm import tqdm
 import numpy as np
 import torch
