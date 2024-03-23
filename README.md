@@ -26,6 +26,7 @@ pip install opencv-python torch-scatter open3d tqdm scipy tensorboard matplotlib
 3. Compile the extensions (takes about 10 minutes)
 ```bash
 cd DROID-SLAM
+wget https://raw.githubusercontent.com/j-wye/droid_slam/main/demo_monocular.py
 python setup.py install
 ```
 
