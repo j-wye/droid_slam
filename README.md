@@ -27,6 +27,7 @@ pip install opencv-python torch-scatter open3d tqdm scipy tensorboard matplotlib
 ```bash
 cd DROID-SLAM
 wget https://raw.githubusercontent.com/j-wye/droid_slam/main/demo_monocular.py
+wget https://raw.githubusercontent.com/j-wye/droid_slam/main/demo_serial.py
 python setup.py install
 ```
 
