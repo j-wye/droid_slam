@@ -1,6 +1,7 @@
 import rclpy
 import sys
 sys.path.append('droid_slam')
+sys.path.append('/opt/ros/humble/lib/python3.10/site-packages')
 from tqdm import tqdm
 import numpy as np
 import torch
@@ -28,6 +29,7 @@ class DROIDSLAM_ROS2(Node):
         self.lidar_sub = self.create_subscription(LaserScan, '/scan', self.lidar_cb, self.qos_policy)
         self.current_lidar_ranges = []
 
+        self.frame_id = 0
         self.droid = None
         self.args = self.parse_arguments()
 
@@ -38,10 +40,12 @@ class DROIDSLAM_ROS2(Node):
 
     def img_cb(self, data):
         try:
-            img = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')
+            cv_img = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')
         except CvBridgeError as e:
             self.get_logger().error(f"CV Bridge error: {e}")
             return
+        
+        self.process_image(cv_img)
 
     def process_image(self, img):
         if self.droid is None:
@@ -52,12 +56,11 @@ class DROIDSLAM_ROS2(Node):
         intrinsics = torch.tensor([self.args.fx, self.args.fy, self.args.cx, self.args.cy], dtype=torch.float32)
 
         # Assuming you have a method to keep track of frame id's
-        frame_id = self.get_frame_id()
-        self.droid.track(frame_id, frame[None], intrinsics=intrinsics)
+        self.droid.track(self.frame_id, frame[None], intrinsics=intrinsics)
+        self.frame_id += 1
 
     def parse_arguments(self):
         parser = argparse.ArgumentParser()
-        parser.add_argument("--calib", type=str, default="./calib/tartan.txt", help="path to calibration file")
         # Add other argument definitions here as needed, similar to the initial script.
         parser.add_argument("--calib", type=str, default="./calib/tartan.txt", help="path to calibration file")
         parser.add_argument("--stride", default=2, type=int, help="frame stride")
@@ -85,9 +88,9 @@ class DROIDSLAM_ROS2(Node):
         args = parser.parse_args()
         return args
 
-    def get_frame_id(self):
-        # Implement a method to generate or retrieve the current frame id
-        pass
+    # def get_frame_id(self):
+    #     # Implement a method to generate or retrieve the current frame id
+    #     pass
 
 def main(args=None):
     rclpy.init(args=args)
