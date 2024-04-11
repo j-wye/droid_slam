@@ -16,7 +16,7 @@ from droid import Droid
 import torch.nn.functional as F
 
 from rclpy.node import Node
-from sensor_msgs.msg import Image, LaserScan
+from sensor_msgs.msg import Image, LaserScan, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
@@ -25,38 +25,51 @@ class DROIDSLAM_ROS2(Node):
         super().__init__('droid_slam_ros2_node')
         self.bridge = CvBridge()
         self.qos_policy = QoSProfile(reliability = ReliabilityPolicy.RELIABLE,history = HistoryPolicy.KEEP_LAST, depth=1)
-        self.img_sub = self.create_subscription(Image, '/oakd/rgb/preview/image_raw', self.img_cb, self.qos_policy)
+        self.img_sub = self.create_subscription(CompressedImage, '/oakd/rgb/image_raw/compressed', self.img_cb, self.qos_policy)
         self.lidar_sub = self.create_subscription(LaserScan, '/scan', self.lidar_cb, self.qos_policy)
         self.current_lidar_ranges = []
 
         self.frame_id = 0
         self.droid = None
-        self.args = self.parse_arguments()
-
-        torch.multiprocessing.set_start_method('spawn', force=True)
+        self.args = self.parse_arguments()   
 
     def lidar_cb(self, data):
         self.current_lidar_ranges = data.ranges
 
     def img_cb(self, data):
         try:
-            cv_img = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')
+            cv_img = self.bridge.compressed_imgmsg_to_cv2(data, desired_encoding='bgr8')
         except CvBridgeError as e:
             self.get_logger().error(f"CV Bridge error: {e}")
             return
-        
         self.process_image(cv_img)
+    
+    def show_image(self, img):
+        img = img.permute(1, 2, 0).cpu().numpy()
+        cv2.imshow('image', img)
+        cv2.waitKey(1)
 
     def process_image(self, img):
         if self.droid is None:
+            calib = np.loadtxt(self.args.calib, delimiter=" ")
+            fx, fy, cx, cy = calib[:4]
+            self.intrinsics = torch.tensor([fx, fy, cx, cy], dtype=torch.float32)
             self.droid = Droid(self.args)
-        
-        frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # K = np.eye(3)
+        # K[0, 0] = fx
+        # K[0, 2] = cx
+        # K[1, 1] = fy
+        # K[1, 2] = cy
+        height = 480
+        width = 640
+        img_resized = cv2.resize(img, (width, height))
+        frame = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
         frame = torch.as_tensor(frame).permute(2, 0, 1).to(torch.float32)
-        intrinsics = torch.tensor([self.args.fx, self.args.fy, self.args.cx, self.args.cy], dtype=torch.float32)
-
-        # Assuming you have a method to keep track of frame id's
-        self.droid.track(self.frame_id, frame[None], intrinsics=intrinsics)
+        
+        if self.frame_id % self.args.stride == 0:
+            self.droid.track(self.frame_id, frame[None], intrinsics=self.intrinsics)
+            if not self.args.disable_vis:
+                self.show_image(frame)
         self.frame_id += 1
 
     def parse_arguments(self):
@@ -86,6 +99,8 @@ class DROIDSLAM_ROS2(Node):
         parser.add_argument("--reconstruction_path", help="path to saved reconstruction")
         
         args = parser.parse_args()
+        args.stereo = False
+        torch.multiprocessing.set_start_method('spawn', force=True)
         return args
 
     # def get_frame_id(self):
