@@ -1,6 +1,6 @@
 import rclpy, sys, torch, lietorch, cv2, os, glob, time, argparse
 sys.path.append('droid_slam')
-sys.path.append('/opt/ros/humble/lib/python3.10/site-packages')
+sys.path.append('/opt/ros/${ROS_DISTRO}/lib/python3.10/site-packages')
 from tqdm import tqdm
 import numpy as np
 from torch.multiprocessing import Process
@@ -32,7 +32,6 @@ class DROIDSLAM_ROS2_SERIAL(Node):
         self.lidar_range_min = data.range_min
         self.lidar_range_max = data.range_max
         self.laser_point = round((self.lidar_angle_max - self.lidar_angle_min) / self.lidar_angle_increment)
-        print(self.laser_point)
 
     def img_cb(self, data):
         try:
