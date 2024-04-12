@@ -1,8 +1,9 @@
 # DROID-SLAM
+Before : This README.md file refer to this [github](https://github.com/princeton-vl/DROID-SLAM) and change to suit my taste
+
 ## Requirements
 To run the code you will need
 * **Inference:** Running the demos will require a GPU with at least 11G of memory. 
-
 * **Training:** Training requires a GPU with at least 24G of memory. We train on 4 x RTX-3090 GPUs.
 
 ## Getting Started
@@ -33,15 +34,14 @@ To run the code you will need
 
 ## Demos
 
-1. Download the model from google drive: [droid.pth](https://drive.usercontent.google.com/u/0/uc?id=1PpqVt1H4maBa_GbPJp4NwxRsd9jk-elh&export=download)
+1. Download the Pretrained model from google drive: [droid.pth](https://drive.usercontent.google.com/u/0/uc?id=1PpqVt1H4maBa_GbPJp4NwxRsd9jk-elh&export=download)
 
 2. Download some sample videos using the provided script.
-```bash
-./tools/download_sample_data.sh
-```
+    ```bash
+    ./tools/download_sample_data.sh
+    ```
 
 Run the demo on any of the samples (all demos can be run on a GPU with 11G of memory). While running, press the "s" key to increase the filtering threshold (= more points) and "a" to decrease the filtering threshold (= fewer points). To save the reconstruction with full resolution depth maps use the `--reconstruction_path` flag.
-
 
 ```Python
 python demo.py --imagedir=data/abandonedfactory --calib=calib/tartan.txt --stride=2
@@ -62,7 +62,6 @@ python demo.py --imagedir=data/mav0/cam0/data --calib=calib/euroc.txt --t0=150
 ```Python
 python demo.py --imagedir=data/rgbd_dataset_freiburg3_cabinet/rgb --calib=calib/tum3.txt
 ```
-
 
 **Running on your own data:** All you need is a calibration file. Calibration files are in the form 
 ```
