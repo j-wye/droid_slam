@@ -33,6 +33,7 @@ To run the code you will need
     ```
 
 ## For My Project
+- If you want to change rosbag file to png : check this python file [🔗](./rosbag_to_png.py)
 1. Turtlebot4 DROID-SLAM with fastrtps
     ```bash
     cad && cd ~/DROID-SLAM
