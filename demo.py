@@ -40,7 +40,6 @@ def image_stream(imagedir, calib, stride):
         image = cv2.imread(os.path.join(imagedir, imfile))
         if len(calib) > 4:
             image = cv2.undistort(image, K, calib[4:])
-
         h0, w0, _ = image.shape
         h1 = int(h0 * np.sqrt((384 * 512) / (h0 * w0)))
         w1 = int(w0 * np.sqrt((384 * 512) / (h0 * w0)))

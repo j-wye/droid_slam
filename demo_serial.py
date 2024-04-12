@@ -1,26 +1,17 @@
-import rclpy
-import sys
+import rclpy, sys, torch, lietorch, cv2, os, glob, time, argparse
 sys.path.append('droid_slam')
 sys.path.append('/opt/ros/humble/lib/python3.10/site-packages')
 from tqdm import tqdm
 import numpy as np
-import torch
-import lietorch
-import cv2
-import os
-import glob
-import time
-import argparse
 from torch.multiprocessing import Process
 from droid import Droid
 import torch.nn.functional as F
-
 from rclpy.node import Node
 from sensor_msgs.msg import Image, LaserScan, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
-class DROIDSLAM_ROS2(Node):
+class DROIDSLAM_ROS2_SERIAL(Node):
     def __init__(self):
         super().__init__('droid_slam_ros2_node')
         self.bridge = CvBridge()
@@ -35,9 +26,17 @@ class DROIDSLAM_ROS2(Node):
 
     def lidar_cb(self, data):
         self.current_lidar_ranges = data.ranges
+        self.lidar_angle_min = data.angle_min
+        self.lidar_angle_max = data.angle_max
+        self.lidar_angle_increment = data.angle_increment
+        self.lidar_range_min = data.range_min
+        self.lidar_range_max = data.range_max
+        self.laser_point = round((self.lidar_angle_max - self.lidar_angle_min) / self.lidar_angle_increment)
+        print(self.laser_point)
 
     def img_cb(self, data):
         try:
+            # (720, 1280) : img size가 default
             cv_img = self.bridge.compressed_imgmsg_to_cv2(data, desired_encoding='bgr8')
         except CvBridgeError as e:
             self.get_logger().error(f"CV Bridge error: {e}")
@@ -50,20 +49,17 @@ class DROIDSLAM_ROS2(Node):
         cv2.waitKey(1)
 
     def process_image(self, img):
+        # HERE! : Can modify image size which I want
+        mod_height = 480
+        mod_width = 640
         if self.droid is None:
             calib = np.loadtxt(self.args.calib, delimiter=" ")
             fx, fy, cx, cy = calib[:4]
             self.intrinsics = torch.tensor([fx, fy, cx, cy], dtype=torch.float32)
             self.droid = Droid(self.args)
-        # K = np.eye(3)
-        # K[0, 0] = fx
-        # K[0, 2] = cx
-        # K[1, 1] = fy
-        # K[1, 2] = cy
-        height = 480
-        width = 640
-        img_resized = cv2.resize(img, (width, height))
-        frame = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
+        
+        mod_img = cv2.resize(img, (mod_width, mod_height))
+        frame = cv2.cvtColor(mod_img, cv2.COLOR_BGR2RGB)
         frame = torch.as_tensor(frame).permute(2, 0, 1).to(torch.float32)
         
         if self.frame_id % self.args.stride == 0:
@@ -91,7 +87,6 @@ class DROIDSLAM_ROS2(Node):
         parser.add_argument("--frontend_window", type=int, default=25, help="frontend optimization window")
         parser.add_argument("--frontend_radius", type=int, default=2, help="force edges between frames within radius")
         parser.add_argument("--frontend_nms", type=int, default=1, help="non-maximal supression of edges")
-
         parser.add_argument("--backend_thresh", type=float, default=22.0)
         parser.add_argument("--backend_radius", type=int, default=2)
         parser.add_argument("--backend_nms", type=int, default=3)
@@ -103,15 +98,11 @@ class DROIDSLAM_ROS2(Node):
         torch.multiprocessing.set_start_method('spawn', force=True)
         return args
 
-    # def get_frame_id(self):
-    #     # Implement a method to generate or retrieve the current frame id
-    #     pass
-
 def main(args=None):
     rclpy.init(args=args)
-    droid_slam_ros = DROIDSLAM_ROS2()
-    rclpy.spin(droid_slam_ros)
-    droid_slam_ros.destroy_node()
+    droid_slam_ros2 = DROIDSLAM_ROS2_SERIAL()
+    rclpy.spin(droid_slam_ros2)
+    droid_slam_ros2.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
