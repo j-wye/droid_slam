@@ -27,8 +27,8 @@ To run the code you will need
 3. Compile the extensions (takes about 10 minutes)
     ```bash
     cd DROID-SLAM
-    wget https://raw.githubusercontent.com/j-wye/droid_slam/main/demo_monocular.py
-    wget https://raw.githubusercontent.com/j-wye/droid_slam/main/demo_serial.py
+    wget https://raw.githubusercontent.com/j-wye/droid_slam/main/monocular.py
+    wget https://raw.githubusercontent.com/j-wye/droid_slam/main/serial.py
     python setup.py install
     ```
 
