@@ -32,8 +32,6 @@ To run the code you will need
     python setup.py install
     ```
 
-## [Demos Original](./README_original.md)
-
 ## For My Project
 1. Turtlebot4 DROID-SLAM with fastrtps
     ```bash
@@ -50,3 +48,5 @@ To run the code you will need
     python monocular.py
     ```
     Test is not finished when using Depth camera or RGBD
+
+## [Demos Original](./README_original.md)
